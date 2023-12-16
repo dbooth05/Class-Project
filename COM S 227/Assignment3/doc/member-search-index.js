@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"hw3","c":"SnakeUtil","l":"createDescriptorsFromFile(String)","u":"createDescriptorsFromFile(java.lang.String)"},{"p":"hw3","c":"SnakeUtil","l":"findSnakes(String[])","u":"findSnakes(java.lang.String[])"}];updateSearchResults();
