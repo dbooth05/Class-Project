@@ -1,0 +1,1 @@
+SELECT students.name FROM students INNER JOIN register ON students.snum = register.snum WHERE register.regtime = 'Fall2020';
