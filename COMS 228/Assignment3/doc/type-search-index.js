@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"edu.iastate.cs228.hw3","l":"MultiList"},{"p":"edu.iastate.cs228.hw3","l":"MultiList.MultiListIterator"},{"p":"edu.iastate.cs228.hw3","l":"MultiList.Node"},{"p":"edu.iastate.cs228.hw3","l":"MultiList.NodeInfo"}];updateSearchResults();

@@ -1,0 +1,108 @@
+PROJECT 2 DBOOTH05 QUERIES
+
+//	Query 1:	//
+match(student {name:'Kevin'}) return student.c_addr;
+
+
+//	Query 2:	//
+match(student {name: 'Kevin'})-[:major]->(major) return major.name, major.level;
+
+
+//	Query 3:	//
+SELECT courses.number, courses.name FROM courses WHERE courses.department_code = 401 ORDER BY courses.number;
+
+
+//	Query 4:	//
+match(student)-[register]->(course) where register.regtime = 'Fall2020' return student.name;
+
+
+//	Query 5:	//
+match (department:department {name:"Computer Science"})-[:administer]->(degree:degree)
+	return degree.name, degree.level;
+
+
+//	Query 6:	//
+match(student)-[:minor]->(minor) return student.snum, student.name order by student.snum;
+
+
+//	Query 7:	//
+match(student)-[:major]->(major) match(student)-[:register]->(course {number: 363})
+	where not major.level = 'BS'
+	return student.snum, student.name order by student.snum;
+
+
+//	Query 8:	//
+match(student:student) where toLower(student.name) contains 'n'
+	return student.snum, student.name, student.ssn order by student.snum;
+
+
+//	Query 9:	//
+match(student:student) where student.name >= 'Becky' and student.name <= 'Nicole'
+	return student.name, student.snum, student.ssn order by student.name;
+
+
+//	Query 10:	//
+match(course:course) 
+	optional match (course:course)<-[:register]-(student:student)
+	return course.number, course.name, count(student) as course_number
+	order by course.number;
+
+
+//	Query 11:	//
+match (student:student)
+	where ((student)-[:major]->(:degree {name: 'Software Engineering'}) or
+      	(student)-[:minor]->(:degree {name: 'Software Engineering'}))
+      	and student.gender = 'F'
+	return count(distinct student.snum) as count_of_females;
+
+
+//	Query 12:	//
+match (student:student)-[register:register]->(course:course)
+	where register.regtime <> 'Fall2023'
+	with course, student, toFloat(register.grade) as grade
+	return course.number, course.name, avg(grade) as averageGrade;
+
+
+//	Query 13:	//
+match(student:student)-[:major|:minor]->(degree:degree)
+	match(department:department)-[:administer]->(degree)
+	where department.college = 'LAS' and student.gender = 'F'
+	return count(distinct student) as count_of_females;
+
+
+//	Query 14:	//
+match (degree:degree)<-[:major|minor]-(student:student) with degree,
+	sum(case when student.gender = 'M' then 1 else 0 end) as male_count,
+	sum(case when student.gender = 'F' then 1 else 0 end) as female_count
+	where male_count > female_count
+	return degree.name;
+
+
+//	Query 15:	//
+match(student:student)-[:major]->(degree:degree) with degree, student
+	order by student.dob asc limit 1
+	return degree.name;
+
+
+//	Query 16:	//
+match(student:student)-[:major]->(degree:degree) with degree, count(student) as counts
+	order by counts desc with collect({degree: degree, counts: counts})[0] as most_popular
+	return most_popular.degree.name as degree_name, most_popular.degree.level as degree_level, 
+		most_popular.counts as counts;
+
+
+//	Query 17:	//
+match (degree:degree) optional match (student:student)-[:major|minor]->(degree)
+	with degree, count(student) as student_count order by student_count desc
+	with collect({degree: degree, student_count: student_count}) as popular_degrees
+	with popular_degrees[0] as most_popular
+	where most_popular is not null
+	return most_popular.degree.name as degree_name, most_popular.degree.level as degree_level, 
+		coalesce(most_popular.student_count, 0) as student_count;
+
+
+
+
+
+
+

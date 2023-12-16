@@ -1,1 +1,0 @@
-SELECT c_addr FROM students WHERE students.name = 'Kevin';

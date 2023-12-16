@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"edu.iastate.cs228.hw3"}];updateSearchResults();

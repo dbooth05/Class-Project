@@ -1,0 +1,3 @@
+DROP ALL RECORDS DBOOTH05
+
+match (n) detach delete n;

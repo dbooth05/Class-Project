@@ -1,1 +1,0 @@
-SELECT courses.number, courses.name FROM courses WHERE courses.department_code = 401 ORDER BY courses.number;

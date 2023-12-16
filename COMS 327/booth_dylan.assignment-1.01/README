@@ -1,1 +1,0 @@
-This creates and generates the grid/map of the pokemon terrain. Choosing random points as seeds for terrain and growing them. Followed by randomly choosing gates and creating a path between them, followed by randomly choosing spot next to path for the buildings.

@@ -1,4 +1,0 @@
-This program implements a sobel edge detection filter on PGM images.
-
-To use filter,
-./assignment0 <name of PMG file>

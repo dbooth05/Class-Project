@@ -1,2 +1,0 @@
-This code parses the specified csv file based on a command line input. The file is then loaded into an vector (array list)
-  that will store all class objects from that file. Then the code will print out all of the items in vector.

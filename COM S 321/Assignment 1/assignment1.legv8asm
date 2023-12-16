@@ -1,0 +1,223 @@
+// Dylan Booth
+// Gavin Fisher
+
+//--------------------------------------------------------------------------------------------
+                                    //Main
+B main
+main:
+//TODO
+ADDI X19, XZR, #0           //address of array a
+ADDI X20, XZR, #100         //size of array or n
+ADDI X0, X19, #0
+ADDI X1, X20, #0
+BL fill
+
+ADDI X0, X19, #0
+ADDI X1, X20, #0
+BL selection_sort
+//print array
+
+
+// //bin_search(a, 0, (sizeof (a) / sizeof (a[0])) - 1, 0)
+ADDI X0, XZR, #0
+ADDI X1, XZR, #0
+ADDI X2, XZR, #99
+ADDI X3, XZR, #0
+BL bin_search         //should return 0
+PRNT X0
+
+//bin_search(a, 0, (sizeof (a) / sizeof (a[0])) - 1, sizeof (a) / sizeof (a[0]) - 1)
+ADDI X0, XZR, #0
+ADDI X1, XZR, #0
+ADDI X2, XZR, #99
+ADDI X3, XZR, #99
+BL bin_search            //should return 9999
+PRNT X0
+
+// //bin_search(a, 0, (sizeof (a) / sizeof (a[0])) - 1, (sizeof (a) / sizeof (a[0])) / 2)
+ADDI X0, XZR, #0
+ADDI X1, XZR, #0
+ADDI X2, XZR, #99
+ADDI X11, XZR, #100
+LSR X3, X11, #1
+BL bin_search         //should return 5000
+PRNT X0
+
+// //bin_search(a, 0, (sizeof (a) / sizeof (a[0])) - 1, sizeof (a) / sizeof (a[0]))
+ADDI X0, XZR, #0
+ADDI X1, XZR, #0
+ADDI X2, XZR, #99
+ADDI X3, XZR, #100
+BL bin_search         //should return -1
+PRNT X0
+
+B end
+
+//--------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------
+                                    //FILL method
+fill:
+ORR X10, XZR, XZR           //X10 = i = 0
+
+fill_loop:                  
+SUB X11, X1, X10            //X11 = n - i
+SUBI X11, X11, #1           //X11 = X11 - 1
+STUR X11, [X0, #0]          //adding X11 to array
+ADDI X0, X0, #8             //X0 += 8
+ADDI X10, X10, #1           //X10 (i) += 1
+SUBS XZR, X10, X1           
+B.LT fill_loop              //redo loop if i < n
+
+//--------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------
+                                    //SWAP method
+//Assuming we set X0 to *p and X1 to *q
+swap:
+LDUR X9, [X0, #0]           //Load *p
+LDUR X10, [X1, #0]          //Load *q
+STUR X10, [X0, #0]          //store *q into p
+STUR X9, [X1, #0]           //store p* into q
+BR LR
+
+//--------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------
+                                    //Binary Search
+// X0 = a* , X1 = start , X2 = end , X3 = value
+bin_search:                              
+SUBI SP, SP, #40            // Store saved registers to use for recurive calls.   
+STUR LR, [SP, #0]                           
+STUR X19, [SP, #8]
+STUR X20, [SP, #16]
+STUR X21, [SP, #24]
+STUR X22, [SP, #32]
+ADD X19, XZR, X0            //a* 
+ADD X20, XZR, X1            //start
+ADD X21, XZR, X2            //end
+ADD X22, XZR, X3            //value
+SUBS XZR, X21, X20
+B.LT bin_search_end_neg     //return here -> if end < start  
+ADD X23, X20, X21
+LSR X23, X23, #1            //index (start+end)/2                
+ADD  X9, X19, X23           //a[index]
+SUBS XZR, X9, X22           //compare a[index] and value
+B.EQ bin_search_equal       //return value
+SUBS XZR, X9, X22           //a[index] > value
+B.GT bin_search_gt
+B bin_search_else
+
+bin_search_equal:
+STUR X0, [X23, #0]          //return index
+ADD X0, X23, XZR
+B bin_search_return
+
+bin_search_gt:
+SUBI X23, X23, #1           //INDEX-1
+ADD X2, XZR, X23            //MODIFY END PARAM
+ADDI SP, SP, #40
+B bin_search                //modify params 
+
+bin_search_else:
+ADDI X23, X23, #1           //INDEX+1
+ADD X1, XZR, X23            //INCREASE START
+ADDI SP, SP, #40
+B bin_search                //set new params, jump to BS
+
+bin_search_end_neg:
+ADDI X3, XZR, #-1
+ADD X0, X3, XZR
+B bin_search_return
+
+bin_search_return:               
+LDUR LR, [SP, #0]
+LDUR X19, [SP, #8]
+LDUR X20, [SP, #16]
+LDUR X21, [SP, #24]
+LDUR X22, [SP, #32]
+ADDI SP, SP, #40
+BR LR 
+
+//--------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------
+                                    //find min idx
+find_min_idx:
+ADDI X9, XZR, #8            //i = 1, i = X9
+ADDI X10, XZR, #0           //min index = 0
+
+LSL X1, X1, #3
+
+min_loop:
+SUBS XZR, X9, X1            //i-n, then sets compare flag
+B.GE min_return
+LDUR X11, [X0, #8]          //X11 = value to compare to min index
+LDUR X12, [X0, #0]          //X12 = value at curr min index
+SUBS XZR, X11, X12         
+B.GE min_iterate            //branch to min iterate
+ADDI X10, X9, #0            //sets minindex with address of min value 
+
+min_iterate:
+ADDI X0, X0, #8             //a+=8
+ADDI X9, X9, #8             //i+=1
+SUBS XZR, X9, X1
+B min_loop
+
+min_return:                 //returns min index
+ADDI X0, X10, #0            //sets min index (X0) to the address
+BR LR                       //links back to branch
+
+//--------------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------------
+                                    //Selection sort
+selection_sort:
+SUBI SP, SP, #48            //allocate stack space
+STUR LR, [SP, #40]
+STUR X19, [SP, #32]         //*a
+STUR X20, [SP, #24]         //n
+STUR X21, [SP, #16]         //i
+STUR X22, [SP, #8]          //a+i
+STUR X23, [SP, #0]
+
+ADD X19, X0, XZR            //X19 = *a
+ADD X20, X1, XZR            //X20 = n
+
+ADDI X21, XZR, #0           //i=0
+
+selection_loop:
+SUBS XZR, X21, X20
+B.GE end_sort               //if i-n < 0 goto end_sort;
+
+LSL X23, X21, #3            //i*8
+ADD X0, X19, X23            //X0 = a + i*8
+
+ADD X22, XZR, X0            //X22 = X0 (a+i)
+SUB X1, X20, X21            //X1 = n - i
+
+BL find_min_idx
+
+ADD X1, X22, X0
+ADD X0, XZR, X22
+
+BL swap
+
+ADDI X21, X21, #1           //i++
+B selection_loop
+
+
+end_sort:
+LDUR LR, [SP, #0]
+LDUR X19, [SP, #8]         //*a
+LDUR X20, [SP, #16]        //n
+LDUR X21, [SP, #24]        //i
+LDUR X22, [SP, #32]        //a+i
+LDUR X23, [SP, #40]
+ADDI SP, SP, #48
+BR LR
+
+//--------------------------------------------------------------------------------------------
+
+end:
+HALT
